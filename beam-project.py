@@ -18,6 +18,7 @@ def __init__(self, width, height, area, centroid):
     self.area = area
     self.centroid = centroid
 
+## Change These Variables =====================================
 
 # Measurements in mm for:
 web_width = 0
@@ -27,20 +28,26 @@ top_flange_width = 0
 bot_flange_height = 0
 bot_flange_width = 0
 
+# Beam Force 
+F = 0
+
+## ============================================================
 
 # Variables for Beam Under Loading
-F = 0
 Ra = 0
 Rb = 0
 Vmax = 0
 Mmax = 0
 SigmaMax = 0
 TauMax = 0
+TauGlue = 0
 
 def main():
     top = block(top_flange_width, top_flange_height, area(top_flange_width, top_flange_height), centroid(top_flange_height, web_height + bot_flange_height))
     middle = block(web_width, web_height, area(web_width, web_height), centroid(web_height, bot_flange_height))
     bottom = block(bot_flange_width, bot_flange_height, area(bot_flange_width, bot_flange_height), centroid(bot_flange_height, 0))
+
+    totalheight = (top.height + middle.height + bottom.height)
 
     totalcentroid = totalcentroidfunc(top, middle, bottom)
 
@@ -53,26 +60,25 @@ def main():
     Ra = (2/5)*F
     Rb = (3/5)*F
     Vmax = abs(Rb)
-    Mmax = 12*Ra # Specific to a 20in beam loaded 12in in
+    Mmax = 12*Ra # Specific to a 20in beam loaded 12in into its length
 
-
-    totalheight = (top.height + middle.height + bottom.height)
+    # Calculating Sigma Max in the Beam
     if totalcentroid > (totalheight / 2):
         SigmaMax = (Mmax * totalcentroid) / totalmoment
     else:
         SigmaMax = (Mmax * (totalheight - totalcentroid) / totalmoment)
 
-    if q(top) > q(bottom):
-        TauMax = (Vmax * q(top)) / (totalmoment * web_width)
-    else:
-        TauMax = (Vmax * q(bottom)) / (totalmoment * web_width)
+    # Calculating Sigma Max in the Beam
+    TauMax = (Vmax * qmax(top, middle, bottom, totalcentroid, totalheight)) / (totalmoment * web_width)
 
+    # Calculating the Tau Max in the Glue Areas
+    if q(top) > q(bottom):
+        TauGlue = (Vmax * q(top)) / (totalmoment * web_width)
+    else:
+        TauGlue = (Vmax * q(bottom)) / (totalmoment * web_width)
     
 
     return
-
-    
-
 
 def area(L1, L2):
     return L1*L2
@@ -93,7 +99,11 @@ def parallel(block):
 def q(block):
     return block.area * block.cdist
 
-
+def qmax(top, middle, bottom, totalcentroid, totalheight):
+    if totalcentroid > totalheight/2:
+        return q(bottom) + (((totalcentroid - bottom.height) * middle.width) * (0.5*(totalcentroid - bottom.height)))
+    else:
+        return q(top) + ((totalheight - totalcentroid - top.height) * middle.width) * (0.5 * (totalheight - totalcentroid - top.height))
 
 if __name__ == "__main__":
     main()
