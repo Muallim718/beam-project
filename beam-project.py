@@ -1,6 +1,7 @@
 # Python Script for ENES220 Beam Project Group X
 # Team Members: Jeremy Kuznetsov, Moocow
 
+# English engineering units (lbs, in)
 
 import math
 
@@ -27,6 +28,14 @@ bot_flange_height = 0
 bot_flange_width = 0
 
 
+# Variables for Beam Under Loading
+F = 0
+Ra = 0
+Rb = 0
+Vmax = 0
+Mmax = 0
+SigmaMax = 0
+TauMax = 0
 
 def main():
     top = block(top_flange_width, top_flange_height, area(top_flange_width, top_flange_height), centroid(top_flange_height, web_height + bot_flange_height))
@@ -41,7 +50,24 @@ def main():
 
     totalmoment = momentsquare(top) + parallel(top) + momentsquare(middle) + parallel(middle) + momentsquare(bottom) + parallel(bottom)
 
+    Ra = (2/5)*F
+    Rb = (3/5)*F
+    Vmax = abs(Rb)
+    Mmax = 12*Ra # Specific to a 20in beam loaded 12in in
 
+
+    totalheight = (top.height + middle.height + bottom.height)
+    if totalcentroid > (totalheight / 2):
+        SigmaMax = (Mmax * totalcentroid) / totalmoment
+    else:
+        SigmaMax = (Mmax * (totalheight - totalcentroid) / totalmoment)
+
+    if q(top) > q(bottom):
+        TauMax = (Vmax * q(top)) / (totalmoment * web_width)
+    else:
+        TauMax = (Vmax * q(bottom)) / (totalmoment * web_width)
+
+    
 
     return
 
@@ -49,7 +75,7 @@ def main():
 
 
 def area(L1, L2):
-    return L1*L1
+    return L1*L2
 
 def centroid(hgt, Offset):
     return Offset + (hgt/2)
