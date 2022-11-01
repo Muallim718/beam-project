@@ -43,7 +43,7 @@ Mmax = 0
 SigmaMax = 0
 TauMax = 0
 TauGlue = 0
-
+E = 1.8*10^6 #units in psi, pine is 1.8*10^6, oak is 1.5*10^6
 def main():
     top = Block(top_flange_width, top_flange_height, area(top_flange_width, top_flange_height), centroid(top_flange_height, web_height + bot_flange_height))
     middle = Block(web_width, web_height, area(web_width, web_height), centroid(web_height, bot_flange_height))
@@ -68,7 +68,8 @@ def main():
     bottom.cdist = abs(totalcentroid - (0.5*bottom.height))
 
     totalmoment = momentsquare(top) + parallel(top) + momentsquare(middle) + parallel(middle) + momentsquare(bottom) + parallel(bottom)
-
+    maxDeflection = -8 * 12 * F * (math.pow(20, 2) - math.pow(8, 2) - math.pow(12, 2)) / (6 * E * totalmoment * 20)  # From textbook
+    xDeflection = 12  # Because its simplysupported / singleload force
     Fvalues = list(range(1000, 2500, 10))
     SigmaMaxValues = [0]*150
     TauGlueValues = [0]*150
