@@ -43,7 +43,7 @@ Mmax = 0
 SigmaMax = 0
 TauMax = 0
 TauGlue = 0
-E = 1.8*10^6 #units in psi, pine is 1.8*10^6, oak is 1.5*10^6
+E = 1.8*math.pow(10,6) #units in psi, pine is 1.8*10^6, oak is 1.5*10^6
 def main():
     top = Block(top_flange_width, top_flange_height, area(top_flange_width, top_flange_height), centroid(top_flange_height, web_height + bot_flange_height))
     middle = Block(web_width, web_height, area(web_width, web_height), centroid(web_height, bot_flange_height))
