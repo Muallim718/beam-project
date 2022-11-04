@@ -44,7 +44,7 @@ Mmax = 0
 SigmaMax = 0
 TauMax = 0
 TauGlue = 0
-max_deflection_location = 0
+xmax = 0
 E = 1.5 * pow(10,6) #units in psi, pine is 1.8*10^6, oak is 1.5*10^6
 
 def main():
@@ -69,15 +69,6 @@ def main():
         print("You have violated the flange thickness ratio rule!")
         return
 
-    # Length measurements are in in
-    beam_length = 20
-    # b is the distance from F to the right roller
-    b = 8
-
-    #max_deflection_location = max_deflection_location(beam_length, b)
-    #print(max_deflection_location)
-
-
     totalcentroid = totalcentroidfunc(top, middle, bottom)
 
     top.cdist = abs(totalcentroid - (bottom.height + middle.height + (0.5*top.height)))
@@ -97,6 +88,11 @@ def main():
     sigma_indicator = 0
     tau_wood_indicator = 0
     tau_glue_indicator = 0
+
+    F_sigma = 0
+    F_tauwood = 0
+    F_tauglue = 0
+    F_failure_modes = []
 
     for i in range(0, 200, 1):
 
@@ -123,6 +119,7 @@ def main():
         SigmaMaxValues[i] = SigmaMax
         TauGlueValues[i] = TauGlue
         TauMaxValues[i] = TauMax
+
         
         if SigmaMax > LimitNormal[1] and sigma_indicator == 0:
             sigma_indicator = 1
@@ -137,10 +134,23 @@ def main():
             F_tauglue = Fvalues[i]
             print(f"The failire F for glue shear stress {F_tauglue}")
 
-        #F_failures = []
-        #F_failures.append(F_sigma, F_tauwood, F_tauglue)
-        #print(F_failures)
-        #print(min(F_failures))
+    F_failure_modes.append(F_sigma)
+    F_failure_modes.append(F_tauwood)
+    F_failure_modes.append(F_tauglue)
+    F_control = min(F_failure_modes)
+    
+    # Length measurements are in in
+    beam_length = 20
+    # b is the distance from F to the right roller
+    b = 8
+
+    xmax = max_deflection_location(beam_length, b)
+    deflection_max = max_deflection(F_control, beam_length, b, totalmoment)
+    print(f"Max deflection occurs at {xmax}")
+    '''
+    Max deflection equation is wrong, needs revision
+    print(f"Max deflection is {deflection_max}")
+    '''
 
     df = pd.DataFrame.from_dict({
         'Force'            : Fvalues,
@@ -169,13 +179,13 @@ def main():
     Fnew = 2400
     DeflectionValues = [0]*200
     Dist = [0]*200
-    min = 0
+    minimum = 0
 
     for i in range(0,200,1):
         Dist[i] = i*(12/200)
         DeflectionValues[i] = (-Fnew*8*Dist[i])/(6*20*totalmoment*E) * (pow(20,2)-pow(8,2)-pow(Dist[i],2))
-        if DeflectionValues[i] < min:
-            min = DeflectionValues[i]
+        if DeflectionValues[i] < minimum:
+            minimum = DeflectionValues[i]
 
     dg = pd.DataFrame.from_dict({
         'Distance'   : Dist,
@@ -190,8 +200,6 @@ def main():
     bx.legend(['Displacement'])
     plt.show()
 
-    print(totalmoment)
-    print(min)
     return
 
 # Functions ============================================
@@ -199,8 +207,8 @@ def main():
 def max_deflection_location(L, b):
     return sqrt((pow(L, 2) - pow(b, 2)) / 3)
 
-def max_deflection(L, b):
-    return
+def max_deflection(F, L, b, Iz):
+    return (-2 * F * b * pow(((pow(L, 2) - pow(b, 2)) / 3), 1.5)) / (18 * E * Iz * L)
 
 def area(L1, L2):
     return L1*L2
