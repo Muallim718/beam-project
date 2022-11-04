@@ -75,7 +75,7 @@ def main():
     TauGlueValues = [0]*150
     TauMaxValues = [0]*150
 
-    for i in range(0,150, 1):
+    for i in range(0, 150, 1):
 
         Ra = (2/5)*Fvalues[i]
         Rb = (3/5)*Fvalues[i]
@@ -118,6 +118,32 @@ def main():
     ax.legend(['Max Normal Stress', 'Max Shear Stress', 'Max Glue Stress'])
     plt.show()
 
+    ## Deflection Calculations
+    Fnew = 2400
+    DeflectionValues = [0]*150
+    Dist = [0]*150
+    min = 0
+
+    for i in range(0,150,1):
+        Dist[i] = i*(12/150)
+        DeflectionValues[i] = (-Fnew*8*Dist[i])/(6*20*totalmoment*E) * (pow(20,2)-pow(8,2)-pow(Dist[i],2))
+        if DeflectionValues[i] < min:
+            min = DeflectionValues[i]
+
+    dg = pd.DataFrame.from_dict({
+        'Distance'   : Dist,
+        'Deflection' : DeflectionValues
+    })
+
+    fig, bx = plt.subplots()
+    bx.plot(dg['Distance'], dg['Deflection'])
+    bx.set_title('Deflection vs Distance')
+    bx.set_xlabel('Distance from left pin (in)')
+    bx.set_ylabel('Displacement (in)')
+    bx.legend(['Displacement'])
+    plt.show()
+
+    print(min)
     return
 
 # Functions ============================================
