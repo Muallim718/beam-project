@@ -6,6 +6,7 @@
 import math
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
 
 class Block:
@@ -75,6 +76,9 @@ def main():
     TauGlueValues = [0]*150
     TauMaxValues = [0]*150
 
+    LimitNormal = np.full(150,16000)
+    LimitShear = np.full(150,3500)
+
     for i in range(0, 150, 1):
 
         Ra = (2/5)*Fvalues[i]
@@ -105,18 +109,22 @@ def main():
         'Force'            : Fvalues,
         'Max Normal Stress': SigmaMaxValues,
         'Max Shear Stress' : TauMaxValues,
-        'Max Glue Stress'  : TauGlueValues
+        'Max Glue Stress'  : TauGlueValues,
+        'Max Normal'       : LimitNormal,
+        'Max Shear'        : LimitShear
     })
     
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(1)
     ax.plot(df['Force'], df['Max Normal Stress'])
     ax.plot(df['Force'], df['Max Shear Stress'])
     ax.plot(df['Force'], df['Max Glue Stress'])
+    ax.plot(df['Force'], df['Max Normal'], 'red')
+    ax.plot(df['Force'], df['Max Shear'], 'red')
     ax.set_title('Stresses vs. Applied Load F')
     ax.set_xlabel('Force Units (lbs)')
     ax.set_ylabel('Stress Units (psi)?')
     ax.legend(['Max Normal Stress', 'Max Shear Stress', 'Max Glue Stress'])
-    plt.show()
+    #plt.show()
 
     ## Deflection Calculations
     Fnew = 2400
