@@ -147,10 +147,7 @@ def main():
     xmax = max_deflection_location(beam_length, b)
     deflection_max = max_deflection(F_control, beam_length, b, totalmoment)
     print(f"Max deflection occurs at {xmax}")
-    '''
-    Max deflection equation is wrong, needs revision
     print(f"Max deflection is {deflection_max}")
-    '''
 
     df = pd.DataFrame.from_dict({
         'Force'            : Fvalues,
@@ -208,7 +205,9 @@ def max_deflection_location(L, b):
     return sqrt((pow(L, 2) - pow(b, 2)) / 3)
 
 def max_deflection(F, L, b, Iz):
-    return (-2 * F * b * pow(((pow(L, 2) - pow(b, 2)) / 3), 1.5)) / (18 * E * Iz * L)
+    term1 = - (F * b * sqrt((pow(L, 2) - pow(b, 2)) / 3)) / (6 * E * L * Iz)
+    term2 = pow(20, 2) - pow(8, 2) - ((pow(L, 2) - pow(b, 2)) / 3)
+    return term1 * term2
 
 def area(L1, L2):
     return L1*L2
