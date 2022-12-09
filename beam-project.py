@@ -80,6 +80,7 @@ def main():
     SigmaMaxValues = [0]*200
     TauGlueValues = [0]*200
     TauMaxValues = [0]*200
+    print(f"Moment: {totalmoment}in^4") 
 
     LimitNormal = np.full(200,14327)
     LimitShear = np.full(200,1495)
