@@ -80,7 +80,7 @@ def main():
     SigmaMaxValues = [0]*200
     TauGlueValues = [0]*200
     TauMaxValues = [0]*200
-    print(f"Moment: {totalmoment}in^4") 
+    print(f"Moment: {totalmoment} in^4") 
 
     LimitNormal = np.full(200,14327)
     LimitShear = np.full(200,1495)
@@ -125,15 +125,15 @@ def main():
         if SigmaMax > LimitNormal[1] and sigma_indicator == 0:
             sigma_indicator = 1
             F_sigma = Fvalues[i]
-            print(f"The failure F for normal stress {F_sigma}")
+            print(f"The failure F for normal stress {F_sigma} lb")
         if TauMax > LimitShear[1] and tau_wood_indicator == 0:
             tau_wood_indicator = 1
             F_tauwood = Fvalues[i]
-            print(f"The failire F for shear stress {F_tauwood}")
+            print(f"The failire F for shear stress {F_tauwood} lb")
         if TauGlue > LimitGlueShear[1] and tau_glue_indicator == 0:
             tau_glue_indicator = 1
             F_tauglue = Fvalues[i]
-            print(f"The failire F for glue shear stress {F_tauglue}")
+            print(f"The failire F for glue shear stress {F_tauglue} lb")
 
     F_failure_modes.append(F_sigma)
     F_failure_modes.append(F_tauwood)
@@ -147,8 +147,8 @@ def main():
 
     xmax = max_deflection_location(beam_length, b)
     deflection_max = max_deflection(F_control, beam_length, b, totalmoment)
-    print(f"Max deflection occurs at {xmax}")
-    print(f"Max deflection is {deflection_max}")
+    print(f"Max deflection occurs at {xmax} in from the left support")
+    print(f"Max deflection is {deflection_max} in")
 
     df = pd.DataFrame.from_dict({
         'Force'            : Fvalues,
